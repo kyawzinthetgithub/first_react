@@ -9,7 +9,7 @@ const Card = ({ title }) => {
   },[hasLiked, title]);
   return (
     <div onClick={() => setCount(count+1)}>
-      <h2>{title} - {count}</h2>
+      <h2 className="text-sky-500">{title} - {count}</h2>
       <button
         onClick={() => setHasLiked(!hasLiked)}
       >
