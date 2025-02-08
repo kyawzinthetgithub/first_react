@@ -1,6 +1,7 @@
 import Search from "@/components/Search"
 import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
+import MovieCard from "./components/MovieCard";
 
 const BASE_API_URL = 'https://api.themoviedb.org/3';
 const API_KRY = import.meta.env.VITE_TMDB_API_KEY;
@@ -57,13 +58,13 @@ const App = () => {
       <div className="pattern" />
       <div className="wrapper">
         <header>
-          <img src="./hero-1.png" alt="Hero Banner" className="max-w-1/4 aspect-[1/1]" />
+          <img src="./hero.png" alt="Hero Banner" className="max-w-1/4 aspect-[1/1]" />
           <h1>Find <span className="text-gradient">Movies</span>  You&apos;ll Enjoy Without the Hassle</h1>
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
         <section className="all-movies">
-          <h1>All Movies</h1>
+          <h1 className="mt-[20px]">All Movies</h1>
 
           {loading ? (
             <div className="text-white flex justify-center items-center text-3xl">
@@ -74,7 +75,7 @@ const App = () => {
           ) : (
             <ul className="text-white">
               {movieList.map((movie) => (
-                <p className="text-white" key={movie.id}>{movie.title}</p>
+                <MovieCard key={movie.id} movie={movie}/>
               ))}
             </ul>
           )}
