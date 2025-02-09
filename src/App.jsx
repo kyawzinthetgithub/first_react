@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import MovieCard from "./components/MovieCard";
 import { useDebounce } from "react-use";
+import { getTrandingMovies, updateSearchCount } from "./appwrite";
 
 const BASE_API_URL = 'https://api.themoviedb.org/3';
 const API_KRY = import.meta.env.VITE_TMDB_API_KEY;
@@ -21,6 +22,7 @@ const App = () => {
   const [movieList, setMovieList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [debounceSearchTrem, setDebounceSearchTrem] = useState('');
+  const [trandingMovies,setTrandingMovies] = useState([]);
 
   useDebounce(()=>setDebounceSearchTrem(searchTerm),800,[searchTerm]);
 
@@ -45,6 +47,10 @@ const App = () => {
 
       setMovieList(data.results || []);
 
+      if(query && data.results.length > 0) {
+        await updateSearchCount(query, data.results[0]);
+      }
+
     } catch (error) {
       console.error(`Error fetching movies: ${error}`);
       setErrorMessage('Error fetching movies. Pleace try later!')
@@ -53,9 +59,24 @@ const App = () => {
     }
   }
 
+  const loadingTrandingMovies=  async () => {
+    try{
+      const movies = await getTrandingMovies();
+
+      setTrandingMovies(movies);
+
+    } catch(error) {
+      console.error(error)
+    }
+  }
+
   useEffect(() => {
     fetchMovies(debounceSearchTrem)
   },[debounceSearchTrem]);
+
+  useEffect(() => {
+    loadingTrandingMovies();
+  },[]);
 
   return (
     <main>
@@ -67,8 +88,22 @@ const App = () => {
         <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 
+        {trandingMovies.length > 0 && (
+          <section className="trending">
+            <h2>Trending</h2>
+            <ul>
+              {trandingMovies.map((movie,index) => (
+                <li key={movie.$id}>
+                  <p>{index + 1} </p>
+                  <img src={movie.poster_url} alt={movie.title} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         <section className="all-movies">
-          <h1 className="mt-[20px]">All Movies</h1>
+          <h1>All Movies</h1>
 
           {loading ? (
             <div className="text-white flex justify-center items-center text-3xl">
